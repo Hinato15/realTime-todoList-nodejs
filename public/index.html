@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <title>RealTime TodoList</title>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="notification">
+
+            <div class="level">
+                <div class="level-item">
+                    <h1>Ma Super TodoList</h1>
+                </div>
+            </div>
+        </div>
+
+        <section class="section">
+            <div class="container">
+                <h1 class="title level-item">Votre mission</h1>
+                <hr>
+                <h2 class="subtitle">
+                    Vous allez reprendre le projet de Todolist que nous avions créée, et vous allez l'améliorer pour
+                    faire en sorte qu'elle puisse être utilisée par plusieurs personnes en même temps à l'aide de
+                    socket.io. Voici les fonctionnalités attendues :<br><br>
+
+                    Quand un client se connecte, il récupère la dernière Todolist connue du serveur<br>
+                    Quand un client ajoute une tâche, celle-ci est immédiatement répercutée chez les autres clients<br>
+                    Quand un client supprime une tâche, celle-ci est immédiatement supprimée chez les autres clients<br>
+                    Le serveur pourra retenir la Todolist sous le forme d'un simple array qu'il gardera en mémoire. La
+                    persistence n'est pas demandée (inutile d'utiliser MySQL ou Mongodb ;o).<br><br>
+
+                    L'utilisation d'Express.js est recommandée mais n'est pas obligatoire.<br>
+                    <hr>
+                </h2>
+            </div>
+        </section>
+
+        <div class="level">
+            <div class="level-item">
+                <ul id="displayTodo">
+                </ul>
+            </div>
+        </div>
+
+        <div class="level">
+
+            <div class="level-item">
+
+                <form action="/" method="post" id="todoForm">
+
+                    <div class="field">
+                        <label class="label">New Todo</label>
+                        <div class="control">
+                            <input type="text" name="newTodo" id="newTodo" placeholder="Todo">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="control level-item">
+                            <input class="button is-link" type="submit" />
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <script>
+        let socket = io.connect('http://localhost:8080');
+
+        $("#todoForm").submit(function () {
+            let newTodo = $("#newTodo").val();
+            socket.emit('newTodo', newTodo);
+            $("#newTodo").val('').focus();
+        })
+
+        socket.on('displayTodo', function (todoList) {
+
+            $("#displayTodo").empty();
+
+            todoList.forEach(function (task, index) {
+                insertTodo(task, index);
+
+            });
+        })
+
+
+        function insertTodo(task, index) {
+            $("#displayTodo").append('<li><a class="delete" href=#data-index="' + index + '">✘</a> ' + task + '</li>');
+        }
+
+        $('body').on('click', '.delete', function () {
+            socket.emit('delete', $(this).data('index'));
+        });
+    </script>
+
+</body>
+
+</html>
