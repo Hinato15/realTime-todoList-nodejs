@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "dependencies": {
         "express": "^4.17.1",
-        "socket.io": "~2.3.0"
+        "socket.io": "~2.4.0"
     },
     "author": "Hinato15 <valentinmartel15@gmail.com>",
     "description": "Une TodoList en temps réel en nodeJs"
